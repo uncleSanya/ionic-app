@@ -16,6 +16,15 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://stand-10.beta-dev.aplgo.com',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
   test: {
     globals: true,
     environment: 'jsdom'

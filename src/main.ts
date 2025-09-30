@@ -1,8 +1,9 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router';
-
-import { IonicVue } from '@ionic/vue';
+import {createApp} from 'vue';
+import {createPinia} from 'pinia';
+import App from '@/App.vue';
+import router from '@/router';
+import {IonicVue} from '@ionic/vue';
+import {initAuth} from '@/services/initAuth';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -26,18 +27,22 @@ import '@ionic/vue/css/display.css';
  * For more info, please see:
  * https://ionicframework.com/docs/theming/dark-mode
  */
-
 /* @import '@ionic/vue/css/palettes/dark.always.css'; */
 /* @import '@ionic/vue/css/palettes/dark.class.css'; */
-import '@ionic/vue/css/palettes/dark.system.css';
-
-/* Theme variables */
-import './theme/variables.css';
+/* import '@ionic/vue/css/palettes/dark.system.css'; */
+/* Themes */
+import '@/theme/variables.scss';
+import '@/theme/global.scss';
 
 const app = createApp(App)
-  .use(IonicVue)
-  .use(router);
+    .use(IonicVue)
+    .use(router)
+    .use(createPinia());
 
-router.isReady().then(() => {
-  app.mount('#app');
+initAuth().then(async () =>
+{
+    router.isReady().then(() =>
+    {
+        app.mount('#app');
+    });
 });
