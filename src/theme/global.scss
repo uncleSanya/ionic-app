@@ -98,3 +98,9 @@ ion-tab-bar {
         }
     }
 }
+
+@media (max-width: 300px) {
+    ion-tab-bar ion-label {
+        display: none;
+    }
+}
