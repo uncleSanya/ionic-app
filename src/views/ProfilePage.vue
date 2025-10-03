@@ -32,7 +32,10 @@ const langModel = computed({
 async function doLogout()
 {
     await logout();
-    router.push('/login');
+    router.push('/login').then(() =>
+    {
+        window.location.reload();
+    });
 }
 </script>
 

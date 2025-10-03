@@ -61,6 +61,5 @@ export async function logout(): Promise<void>
     userStore.clearAuth();
 
     await clearPreferencesExceptLang();
-    window.location.reload();
     // await clearCredentials();
 }

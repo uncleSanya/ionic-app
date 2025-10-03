@@ -63,15 +63,19 @@ async function apiRequest(method: HttpMethod, endpoint: string, options: ApiOpti
         }
         if (response.status === 401)
         {
-            await logout();
             const alert = await alertController.create({
                 message: await getCachedTranslation('sessionExpired'),
                 buttons: ['OK'],
             });
             await alert.present();
+            await alert.onDidDismiss();
 
+            await logout();
             const {default: router} = await import('../router');
-            router.push('/login');
+            router.push('/login').then(() =>
+            {
+                window.location.reload();
+            });
 
             return response;
         }
@@ -82,13 +86,14 @@ async function apiRequest(method: HttpMethod, endpoint: string, options: ApiOpti
     {
         if (error.status === 401)
         {
-            await logout();
             const alert = await alertController.create({
                 message: await getCachedTranslation('sessionExpired'),
                 buttons: ['OK'],
             });
             await alert.present();
+            await alert.onDidDismiss();
 
+            await logout();
             const {default: router} = await import('../router');
             router.push('/login');
 

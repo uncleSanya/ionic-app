@@ -50,9 +50,7 @@ export const useLangStore = defineStore('lang', {
         async initLang()
         {
             const saved = await Preferences.get({key: 'lang'});
-            console.log(saved)
             this.lang = (saved.value as 'ru' | 'en') || 'ru';
-            console.log(this.lang)
             await this.loadCachedTranslations();
         },
         async getLangId()
