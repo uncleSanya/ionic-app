@@ -20,6 +20,18 @@ interface AuthResponse
     message?: string;
 }
 
+export async function clearPreferencesExceptLang()
+{
+    const {keys} = await Preferences.keys();
+    for (const key of keys)
+    {
+        if (key !== 'lang')
+        {
+            await Preferences.remove({key});
+        }
+    }
+}
+
 export async function login(partner_login: string, password: string): Promise<AuthResponse>
 {
     const result = await api.post('', {partner_login, password}, {params: {action: 'Auth'}});
@@ -48,8 +60,7 @@ export async function logout(): Promise<void>
     const userStore = useUserStore();
     userStore.clearAuth();
 
-    await Preferences.remove({key: 'auth_token'});
-    await Preferences.remove({key: 'user_data'});
-
+    await clearPreferencesExceptLang();
+    window.location.reload();
     // await clearCredentials();
 }

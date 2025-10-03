@@ -23,19 +23,27 @@ export const useLangStore = defineStore('lang', {
         translations: {},
     }),
     actions: {
-        async setLang(lang: 'ru' | 'en')
+        async setLang(lang: 'ru' | 'en', fromLogin = false)
         {
-            const prevLang = this.lang || 'ru';
-            await Preferences.set({key: 'lang', value: lang});
-
-            const success = await this.fetchTranslations(lang);
-            if (success)
+            if (fromLogin)
             {
                 this.lang = lang;
+                await Preferences.set({key: 'lang', value: lang});
             }
             else
             {
-                await Preferences.set({key: 'lang', value: prevLang});
+                const prevLang = this.lang || 'ru';
+                await Preferences.set({key: 'lang', value: lang});
+
+                const success = await this.fetchTranslations(lang);
+                if (success)
+                {
+                    this.lang = lang;
+                }
+                else
+                {
+                    await Preferences.set({key: 'lang', value: prevLang});
+                }
             }
         },
 

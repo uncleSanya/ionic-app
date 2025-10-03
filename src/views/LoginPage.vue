@@ -25,7 +25,7 @@ const langStore = useLangStore();
 
 const langModel = computed({
     get: () => langStore.lang || 'ru',
-    set: (val) => langStore.setLang(val)
+    set: (val) => langStore.setLang(val, true)
 });
 onIonViewWillEnter(async () =>
 {
