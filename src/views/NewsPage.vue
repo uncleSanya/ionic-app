@@ -15,14 +15,15 @@ import {
     IonModal,
     IonPage,
     IonRefresher,
-    IonRefresherContent, IonSpinner,
+    IonRefresherContent,
+    IonSpinner,
     IonTitle,
     IonToolbar
 } from '@ionic/vue';
 import {onMounted, ref, watch} from 'vue';
 import api from '@/services/api';
 import {useLangStore} from '@/stores/lang';
-import {closeOutline, arrowUpOutline, newspaperOutline} from 'ionicons/icons';
+import {arrowUpOutline, closeOutline, newspaperOutline} from 'ionicons/icons';
 
 interface NewsItem
 {
@@ -151,7 +152,8 @@ watch(() => langStore.lang, async () =>
                 <ion-infinite-scroll-content loading-spinner="bubbles" :loading-text="langStore.translations.loading"/>
             </ion-infinite-scroll>
 
-            <ion-modal :is-open="!!selectedItem" @didDismiss="selectedItem = null" :breakpoints="[0, 0.8, 1]" :initial-breakpoint="0.8" handle-behavior="cycle" backdrop-dismiss="true" swipe-to-close="true">
+            <ion-modal :is-open="!!selectedItem" @didDismiss="selectedItem = null" :breakpoints="[0, 0.8, 1]"
+                       :initial-breakpoint="0.8" handle-behavior="cycle" backdrop-dismiss="true" swipe-to-close="true">
                 <ion-header>
                     <ion-toolbar>
                         <ion-title>{{ selectedItem?.title }}</ion-title>

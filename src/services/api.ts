@@ -30,9 +30,10 @@ async function apiRequest(method: HttpMethod, endpoint: string, options: ApiOpti
         headers['Authorization'] = `Bearer ${tokenData.value}`;
     }
 
+    const lang = await Preferences.get({key: 'lang'});
     const params = {
         ...(options.params || {}),
-        SET_LANG_ID: String(await langStore.getLangId()),
+        SET_LANG_ID: String(langStore.getLangById(lang.value)),
     };
 
     const requestConfig: any = {

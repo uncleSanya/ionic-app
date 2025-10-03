@@ -17,7 +17,8 @@ import {
     IonModal,
     IonPage,
     IonRefresher,
-    IonRefresherContent, IonSpinner,
+    IonRefresherContent,
+    IonSpinner,
     IonTitle,
     IonToolbar
 } from '@ionic/vue';

@@ -76,7 +76,8 @@ async function doLogin()
             return;
         }
         router.push('/main');
-    } catch
+    }
+    catch
     {
         const alert = await alertController.create({
             message: words.value.error,

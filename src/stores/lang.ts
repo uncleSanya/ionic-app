@@ -4,6 +4,7 @@ import {Preferences} from '@capacitor/preferences';
 import {useUserStore} from '@/stores/user';
 import {loadingController} from "@ionic/vue";
 import {getCachedTranslation} from "@/stores/langCache";
+import {uiWords} from "@/stores/langKeys";
 
 export interface Translations
 {
@@ -24,13 +25,17 @@ export const useLangStore = defineStore('lang', {
     actions: {
         async setLang(lang: 'ru' | 'en')
         {
-            this.lang = lang;
+            const prevLang = this.lang || 'ru';
             await Preferences.set({key: 'lang', value: lang});
 
-            const userStore = useUserStore();
-            if (userStore.token)
+            const success = await this.fetchTranslations(lang);
+            if (success)
             {
-                await this.loadTranslations();
+                this.lang = lang;
+            }
+            else
+            {
+                await Preferences.set({key: 'lang', value: prevLang});
             }
         },
 
@@ -49,71 +54,43 @@ export const useLangStore = defineStore('lang', {
             }
             return this.lang === 'ru' ? 1 : 2;
         },
+        getLangById(language: string | null)
+        {
+            return language === 'ru' ? 1 : 2;
+        },
 
         async loadTranslations()
+        {
+            if (!this.lang)
+            {
+                const saved = await Preferences.get({key: 'lang'});
+                this.lang = (saved.value as 'ru' | 'en') || 'ru';
+            }
+            await this.fetchTranslations(this.lang);
+        },
+
+        async fetchTranslations(lang: 'ru' | 'en'): Promise<boolean>
         {
             const loading = await loadingController.create({
                 message: await getCachedTranslation('loading'),
                 spinner: 'crescent',
                 backdropDismiss: false
             });
-
             await loading.present();
-            const uiWords: Record<string, string> = {
-                news: 'Новости',
-                promo: 'Промо',
-                promotions: 'Промоушены',
-                wallet: 'Кошелек',
-                activity: 'Активность',
-                bonusActivity: 'Бонусная активность',
-                notify: 'Уведомления',
-                profile: 'Профиль',
-
-                information: 'Информация',
-                logout: 'Выйти',
-                language: 'Язык',
-                noNews: 'Нет новостей',
-                noPromo: 'Нет доступных промо',
-                all: 'Все',
-                archived: 'Архив',
-                archive: 'В архив',
-                cancel: 'Отмена',
-                unread: 'Непр.',
-                noNotifications: 'Уведомлений нет',
-                noArchiveNotifications: 'Архив пуст',
-                confirmArchive: 'Переместить все уведомления в архив?',
-                walletAvailableBalance: 'Сейчас доступно',
-                thisMonth: 'Текущий месяц',
-                nextMonth: 'Следующий месяц',
-                inactiveBranches: 'Неактивные ветки',
-                selfActivity: 'Личная',
-                branchActivity: 'В ветках',
-
-                yes: 'Да',
-                yesRestrictions: 'Да, с ограничениями',
-                no: 'Нет',
-                branchWOActivity: 'Ветки без активности',
-
-                sessionExpired: 'Сессия авторизации истекла',
-                biometryReason: 'Вход в приложение',
-                biometryTitle: 'Авторизация',
-                biometrySubtitle: 'Подтвердите личность',
-                loading: 'Загрузка...',
-                serverUnavailable: 'Нет соединения с сервером',
-            };
 
             try
             {
                 const result = await api.post('', {translate_request: uiWords}, {params: {action: 'ChangeLanguage'}});
+                console.log(result)
                 if (result.status && result.status != 200)
                 {
                     await this.loadCachedTranslations();
-                    return;
+                    return false;
                 }
                 if (result.translated_params)
                 {
                     this.translations = result.translated_params as Translations;
-                    await Preferences.set({key: `translations_${this.lang}`, value: JSON.stringify(this.translations)});
+                    await Preferences.set({key: `translations_${lang}`, value: JSON.stringify(this.translations)});
                 }
 
                 if (result.user)
@@ -125,10 +102,14 @@ export const useLangStore = defineStore('lang', {
                         userStore.setAuth(tokenData.value, result.user);
                     }
                 }
+
+                return true;
             }
             catch (error: any)
             {
-                console.error('Language error', error);
+                console.error("Language fetch error", error);
+                await this.loadCachedTranslations();
+                return false;
             }
             finally
             {

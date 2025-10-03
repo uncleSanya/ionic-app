@@ -18,7 +18,7 @@ import {
     IonTitle,
     IonToolbar
 } from '@ionic/vue';
-import {onMounted, ref} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import api from "@/services/api";
 import {useLangStore} from '@/stores/lang';
 import {checkmarkCircleOutline, closeCircleOutline} from 'ionicons/icons';
@@ -52,11 +52,6 @@ async function doRefresh(event: CustomEvent)
     (event.target as HTMLIonRefresherElement).complete();
 }
 
-onMounted(() =>
-{
-    loadWallet();
-});
-
 function renderActivity(activity: any, isNextMonth = false)
 {
     const items: { label: string, done: boolean, delayed?: boolean, branches?: string[] }[] = [];
@@ -83,11 +78,25 @@ function renderActivity(activity: any, isNextMonth = false)
     }
     else
     {
-        items.push({label: langStore.translations.branchActivity, done: false, branches: activity.bac_data.bac_v1_data});
+        items.push({
+            label: langStore.translations.branchActivity,
+            done: false,
+            branches: activity.bac_data.bac_v1_data
+        });
     }
 
     return items;
 }
+
+onMounted(() =>
+{
+    loadWallet();
+});
+
+watch(() => langStore.lang, async () =>
+{
+    await loadWallet();
+});
 </script>
 
 <template>
@@ -120,9 +129,12 @@ function renderActivity(activity: any, isNextMonth = false)
                             <h3>{{ langStore.translations.thisMonth }}</h3>
                             <ul>
                                 <li v-for="(item, i) in renderActivity(bonusActivity.this_month)" :key="'this'+i">
-                                    <ion-icon :icon="item.done ? checkmarkCircleOutline : closeCircleOutline" :color="item.done ? 'success' : 'danger'"/>
-                                    {{ item.label }} —
-                                    <span v-if="item.done && item.delayed">{{ langStore.translations.yesRestrictions }}</span>
+                                    <ion-icon :icon="item.done ? checkmarkCircleOutline : closeCircleOutline"
+                                              :color="item.done ? 'success' : 'danger'"/>
+                                    {{ item.label }} -
+                                    <span v-if="item.done && item.delayed">{{
+                                            langStore.translations.yesRestrictions
+                                        }}</span>
                                     <span v-else-if="item.done">{{ langStore.translations.yes }}</span>
                                     <span v-else>{{ langStore.translations.no }}</span>
                                     <div v-if="item.branches && item.branches.length">
@@ -134,8 +146,9 @@ function renderActivity(activity: any, isNextMonth = false)
                             <h3>{{ langStore.translations.nextMonth }}</h3>
                             <ul>
                                 <li v-for="(item, i) in renderActivity(bonusActivity.next_month, true)" :key="'next'+i">
-                                    <ion-icon :icon="item.done ? checkmarkCircleOutline : closeCircleOutline" :color="item.done ? 'success' : 'danger'"/>
-                                    {{ item.label }} —
+                                    <ion-icon :icon="item.done ? checkmarkCircleOutline : closeCircleOutline"
+                                              :color="item.done ? 'success' : 'danger'"/>
+                                    {{ item.label }} -
                                     <span v-if="item.done">{{ langStore.translations.yes }}</span>
                                     <span v-else>{{ langStore.translations.no }}</span>
                                     <div v-if="item.branches && item.branches.length">
@@ -159,14 +172,17 @@ function renderActivity(activity: any, isNextMonth = false)
                 </ion-card>
 
                 <ion-accordion-group v-else expand="inset">
-                    <ion-accordion v-for="wallet in wallets" :key="wallet.wallet_data.id" :value="wallet.wallet_data.id">
+                    <ion-accordion v-for="wallet in wallets" :key="wallet.wallet_data.id"
+                                   :value="wallet.wallet_data.id">
                         <ion-item slot="header">
                             <ion-label>
                                 {{ wallet.monetary_zone_data.name }} ({{ wallet.monetary_zone_data.currency }})
                             </ion-label>
                         </ion-item>
                         <div class="ion-padding" slot="content">
-                            <p><b>{{ langStore.translations.walletAvailableBalance }}:</b>{{ wallet.withdraw_available_with_currency }}</p>
+                            <p><b>{{
+                                    langStore.translations.walletAvailableBalance
+                                }}: </b>{{ wallet.withdraw_available_with_currency }}</p>
                         </div>
                     </ion-accordion>
                 </ion-accordion-group>

@@ -132,7 +132,8 @@ async function handleLinkClick(event: MouseEvent)
             </ion-refresher>
 
             <ion-list v-if="notifyType === 'all'">
-                <ion-item v-for="notify in notifyStore.all" :key="notify.id" :color="notify.critical ? 'warning' : 'light'" lines="inset">
+                <ion-item v-for="notify in notifyStore.all" :key="notify.id"
+                          :color="notify.critical ? 'warning' : 'light'" lines="inset">
                     <ion-label class="ion-text-wrap">
                         <div v-html="notify.notify" @click="handleLinkClick"></div>
                         <small v-if="notify.date">{{ new Date(notify.date).toLocaleString() }}</small>
@@ -152,7 +153,8 @@ async function handleLinkClick(event: MouseEvent)
             </ion-list>
 
             <ion-list v-else>
-                <ion-item v-for="notify in notifyStore.archive" :key="notify.id" :color="notify.critical ? 'warning' : 'light'" lines="inset">
+                <ion-item v-for="notify in notifyStore.archive" :key="notify.id"
+                          :color="notify.critical ? 'warning' : 'light'" lines="inset">
                     <ion-label class="ion-text-wrap">
                         <div v-html="notify.notify" @click="handleLinkClick"></div>
                         <small v-if="notify.date">{{ new Date(notify.date).toLocaleString() }}</small>
@@ -168,7 +170,7 @@ async function handleLinkClick(event: MouseEvent)
 
             </ion-list>
 
-<!--            todo модалка вывода информацуии о партнере-->
+            <!--            todo модалка вывода информацуии о партнере-->
             <ion-modal :is-open="showHtmlModal" @didDismiss="showHtmlModal = false">
                 <ion-header>
                     <ion-toolbar>
