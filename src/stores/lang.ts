@@ -89,7 +89,6 @@ export const useLangStore = defineStore('lang', {
             try
             {
                 const result = await api.post('', {translate_request: uiWords}, {params: {action: 'ChangeLanguage'}});
-                console.log(result)
                 if (result.status && result.status != 200)
                 {
                     await this.loadCachedTranslations();
