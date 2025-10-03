@@ -30,6 +30,7 @@ const langModel = computed({
 onIonViewWillEnter(async () =>
 {
     await langStore.initLang();
+    console.log(langModel)
 });
 
 const glossary = {

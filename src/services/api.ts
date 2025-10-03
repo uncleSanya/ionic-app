@@ -33,7 +33,7 @@ async function apiRequest(method: HttpMethod, endpoint: string, options: ApiOpti
     const lang = await Preferences.get({key: 'lang'});
     const params = {
         ...(options.params || {}),
-        SET_LANG_ID: String(langStore.getLangById(lang.value)),
+        SET_LANG_ID: String(langStore.getLangById((lang.value as 'ru' | 'en') || 'ru')),
     };
 
     const requestConfig: any = {
