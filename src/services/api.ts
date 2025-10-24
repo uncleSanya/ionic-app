@@ -20,6 +20,25 @@ async function apiRequest(method: HttpMethod, endpoint: string, options: ApiOpti
     const tokenData = await Preferences.get({key: 'auth_token'});
     const langStore = useLangStore();
 
+    function deepStringify(obj: any): any
+    {
+        if (obj === null || obj === undefined)
+        {
+            return '';
+        }
+        if (typeof obj !== 'object')
+        {
+            return String(obj);
+        }
+        if (Array.isArray(obj))
+        {
+            return obj.map(v => deepStringify(v));
+        }
+        const result: Record<string, any> = {};
+        for (const key in obj) result[key] = deepStringify(obj[key]);
+        return result;
+    }
+
     const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...(options.headers || {}),
@@ -40,11 +59,11 @@ async function apiRequest(method: HttpMethod, endpoint: string, options: ApiOpti
         method,
         url: `${baseHost}/api/ionic_api/${endpoint}`,
         headers,
-        params,
+        params: deepStringify(params),
     };
     if (method !== 'GET' && options.data)
     {
-        requestConfig.data = options.data;
+        requestConfig.data = deepStringify(options.data);
     }
 
     try
