@@ -19,7 +19,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://stand-10.beta-dev.aplgo.com',
+        target: 'https://s7.gagarin.dev.backoffice.aplgo.com',
         changeOrigin: true,
         secure: false,
       }
